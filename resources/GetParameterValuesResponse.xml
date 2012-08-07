@@ -1,0 +1,23 @@
+<soap:Envelope
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:cwmp="urn:dslforum-org:cwmp-1-1">
+<soap:Header>
+</soap:Header>
+<soap:Body>
+<cwmp:GetParameterValuesResponse>
+<ParameterList soapenc:arrayType="cwmp:ParameterValueStruct[2]">
+<ParameterValueStruct>
+<Name>InternetGatewayDevice.Foo</Name>
+<Value xsi:type="xsd:string">foo</Value>
+</ParameterValueStruct>
+<ParameterValueStruct>
+<Name>InternetGatewayDevice.Bar</Name>
+<Value xsi:type="xsd:unsignedInt">100</Value>
+</ParameterValueStruct>
+</ParameterList>
+</cwmp:GetParameterValuesResponse>
+</soap:Body>
+</soap:Envelope>

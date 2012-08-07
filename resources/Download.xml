@@ -1,0 +1,23 @@
+<soap:Envelope
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:cwmp="urn:dslforum-org:cwmp-1-1">
+<soap:Header>
+</soap:Header>
+<soap:Body>
+<cwmp:Download>
+<CommandKey>1234</CommandKey>
+<FileType>filetype</FileType>
+<URL>url</URL>
+<Username>user1</Username>
+<Password>654321</Password>
+<FileSize>1028</FileSize>
+<TargetFileName>file.bin</TargetFileName>
+<DelaySeconds>10</DelaySeconds>
+<SuccessURL>succurl</SuccessURL>
+<FailureURL>failurl</FailureURL>
+</cwmp:Download>
+</soap:Body>
+</soap:Envelope>

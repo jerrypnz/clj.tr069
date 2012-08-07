@@ -1,0 +1,31 @@
+<soap:Envelope
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:cwmp="urn:dslforum-org:cwmp-1-1">
+<soap:Header>
+</soap:Header>
+<soap:Body>
+<soap:Fault>
+<faultcode>Server</faultcode>
+<faultstring>CWMP fault</faultstring>
+<detail>
+<cwmp:Fault>
+<FaultCode>9005</FaultCode>
+<FaultString>Parameter not found</FaultString>
+<SetParameterValuesFault>
+<ParameterName>InternetGatewayDevice.DeviceInfo.Foo</ParameterName>
+<FaultCode>9005</FaultCode>
+<FaultString>Parameter not found</FaultString>
+</SetParameterValuesFault>
+<SetParameterValuesFault>
+<ParameterName>InternetGatewayDevice.DeviceInfo.Bar</ParameterName>
+<FaultCode>9006</FaultCode>
+<FaultString>Parameter not writable</FaultString>
+</SetParameterValuesFault>
+</cwmp:Fault>
+</detail>
+</soap:Fault>
+</soap:Body>
+</soap:Envelope>

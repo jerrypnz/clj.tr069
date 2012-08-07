@@ -1,0 +1,28 @@
+<soap:Envelope
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:cwmp="urn:dslforum-org:cwmp-1-1">
+<soap:Header>
+</soap:Header>
+<soap:Body>
+<cwmp:GetParameterAttributesResponse>
+<ParameterList soapenc:arrayType="cwmp:ParameterAttributeStruct[2]">
+<cwmp:ParameterAttributeStruct>
+<Name>Foobar</Name>
+<Notification>1</Notification>
+<AccessList soapenc:arrayType="xsd:string[0]">
+</AccessList>
+</cwmp:ParameterAttributeStruct>
+<cwmp:ParameterAttributeStruct>
+<Name>YouAndMe</Name>
+<Notification>2</Notification>
+<AccessList soapenc:arrayType="xsd:string[1]">
+<string>Subscriber</string>
+</AccessList>
+</cwmp:ParameterAttributeStruct>
+</ParameterList>
+</cwmp:GetParameterAttributesResponse>
+</soap:Body>
+</soap:Envelope>

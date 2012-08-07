@@ -1,0 +1,24 @@
+<soap:Envelope
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:cwmp="urn:dslforum-org:cwmp-1-1">
+<soap:Header>
+</soap:Header>
+<soap:Body>
+<cwmp:SetParameterAttributes>
+<ParameterList soapenc:arrayType="cwmp:SetParameterAttributesStruct[1]">
+<SetParameterAttributesStruct>
+<Name>foo</Name>
+<NotificationChange>true</NotificationChange>
+<Notification>2</Notification>
+<AccessListChange>true</AccessListChange>
+<AccessList soapenc:arrayType="xsd:string[1]">
+<string>Subscriber</string>
+</AccessList>
+</SetParameterAttributesStruct>
+</ParameterList>
+</cwmp:SetParameterAttributes>
+</soap:Body>
+</soap:Envelope>

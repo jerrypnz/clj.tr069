@@ -1,0 +1,25 @@
+<soap:Envelope
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:cwmp="urn:dslforum-org:cwmp-1-1">
+<soap:Header>
+</soap:Header>
+<soap:Body>
+<cwmp:AutonomousTransferComplete>
+<AnnounceURL>aurl</AnnounceURL>
+<TransferURL>burl</TransferURL>
+<IsDownload>true</IsDownload>
+<FileType>test type</FileType>
+<FileSize>1028</FileSize>
+<TargetFileName>file.bin</TargetFileName>
+<FaultStruct>
+<FaultCode>9999</FaultCode>
+<FaultString>test fault</FaultString>
+</FaultStruct>
+<StartTime>2012-07-16T10:10:11+08:00</StartTime>
+<CompleteTime>2012-07-16T13:10:10+08:00</CompleteTime>
+</cwmp:AutonomousTransferComplete>
+</soap:Body>
+</soap:Envelope>
