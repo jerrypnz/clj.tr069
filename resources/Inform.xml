@@ -1,64 +1,64 @@
 <soap:Envelope
- xmlns:xsd="http://www.w3.org/2001/XMLSchema"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
- xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
- xmlns:cwmp="urn:dslforum-org:cwmp-1-1">
-<soap:Header>
-<cwmp:ID soap:mustUnderstand="1">69b8d731a7c8acbddcf2143497d375e7fdfec585</cwmp:ID>
-<cwmp:HoldRequest soap:mustUnderstand="1">1</cwmp:HoldRequest>
-</soap:Header>
-<soap:Body>
-<cwmp:Inform>
-<DeviceId>
-<Manufacturer>mobi</Manufacturer>
-<OUI>999A</OUI>
-<ProductClass>test</ProductClass>
-<SerialNumber>0XCAFEBABE</SerialNumber>
-</DeviceId>
-<Event soapenc:arrayType="cwmp:EventStruct[1]">
-<EventStruct>
-<EventCode>0 BOOTSTRAP</EventCode>
-<CommandKey>12345</CommandKey>
-</EventStruct>
-</Event>
-<MaxEnvelopes>1</MaxEnvelopes>
-<CurrentTime>2012-07-12T12:00:00+08:00</CurrentTime>
-<RetryCount>0</RetryCount>
-<ParameterList soapenc:arrayType="cwmp:ParameterValueStruct[8]">
-<ParameterValueStruct>
-<Name>InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.ExternalIPAddress</Name>
-<Value xsi:type="xsd:string">202.101.101.101</Value>
-</ParameterValueStruct>
-<ParameterValueStruct>
-<Name>InternetGatewayDevice.ManagementServer.ConnectionRequestURL</Name>
-<Value xsi:type="xsd:string">http://202.101.101.101:8081</Value>
-</ParameterValueStruct>
-<ParameterValueStruct>
-<Name>InternetGatewayDevice.DeviceSummary</Name>
-<Value xsi:type="xsd:string">foobar</Value>
-</ParameterValueStruct>
-<ParameterValueStruct>
-<Name>InternetGatewayDevice.ManagementServer.ParameterKey</Name>
-<Value xsi:type="xsd:string">123456</Value>
-</ParameterValueStruct>
-<ParameterValueStruct>
-<Name>InternetGatewayDevice.DeviceInfo.ProvisioningCode</Name>
-<Value xsi:type="xsd:string">12345</Value>
-</ParameterValueStruct>
-<ParameterValueStruct>
-<Name>InternetGatewayDevice.DeviceInfo.HardwareVersion</Name>
-<Value xsi:type="xsd:string">1.0a</Value>
-</ParameterValueStruct>
-<ParameterValueStruct>
-<Name>InternetGatewayDevice.DeviceInfo.SoftwareVersion</Name>
-<Value xsi:type="xsd:string">1.1a</Value>
-</ParameterValueStruct>
-<ParameterValueStruct>
-<Name>InternetGatewayDevice.DeviceInfo.SpecVersion</Name>
-<Value xsi:type="xsd:string">1.1a</Value>
-</ParameterValueStruct>
-</ParameterList>
-</cwmp:Inform>
-</soap:Body>
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:cwmp="urn:dslforum-org:cwmp-1-1">
+    <soap:Header>
+        <cwmp:ID soap:mustUnderstand="1">69b8d731a7c8acbddcf2143497d375e7fdfec585</cwmp:ID>
+        <cwmp:HoldRequest soap:mustUnderstand="1">1</cwmp:HoldRequest>
+    </soap:Header>
+    <soap:Body>
+        <cwmp:Inform>
+            <DeviceId>
+                <Manufacturer>mobi</Manufacturer>
+                <OUI>999A</OUI>
+                <ProductClass>test</ProductClass>
+                <SerialNumber>0XCAFEBABE</SerialNumber>
+            </DeviceId>
+            <Event soapenc:arrayType="cwmp:EventStruct[1]">
+                <EventStruct>
+                    <EventCode>0 BOOTSTRAP</EventCode>
+                    <CommandKey>12345</CommandKey>
+                </EventStruct>
+            </Event>
+            <MaxEnvelopes>1</MaxEnvelopes>
+            <CurrentTime>2012-07-12T12:00:00+08:00</CurrentTime>
+            <RetryCount>0</RetryCount>
+            <ParameterList soapenc:arrayType="cwmp:ParameterValueStruct[8]">
+                <ParameterValueStruct>
+                    <Name>InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.ExternalIPAddress</Name>
+                    <Value xsi:type="xsd:string">202.101.101.101</Value>
+                </ParameterValueStruct>
+                <ParameterValueStruct>
+                    <Name>InternetGatewayDevice.ManagementServer.ConnectionRequestURL</Name>
+                    <Value xsi:type="xsd:string">http://202.101.101.101:8081</Value>
+                </ParameterValueStruct>
+                <ParameterValueStruct>
+                    <Name>InternetGatewayDevice.DeviceSummary</Name>
+                    <Value xsi:type="xsd:string">foobar</Value>
+                </ParameterValueStruct>
+                <ParameterValueStruct>
+                    <Name>InternetGatewayDevice.ManagementServer.ParameterKey</Name>
+                    <Value xsi:type="xsd:int">123456</Value>
+                </ParameterValueStruct>
+                <ParameterValueStruct>
+                    <Name>InternetGatewayDevice.DeviceInfo.ProvisioningCode</Name>
+                    <Value xsi:type="xsd:unsignedInt">12345</Value>
+                </ParameterValueStruct>
+                <ParameterValueStruct>
+                    <Name>InternetGatewayDevice.DeviceInfo.HardwareVersion</Name>
+                    <Value xsi:type="xsd:string">1.0a</Value>
+                </ParameterValueStruct>
+                <ParameterValueStruct>
+                    <Name>InternetGatewayDevice.DeviceInfo.SoftwareVersion</Name>
+                    <Value xsi:type="xsd:string">1.1a</Value>
+                </ParameterValueStruct>
+                <ParameterValueStruct>
+                    <Name>InternetGatewayDevice.DeviceInfo.SpecVersion</Name>
+                    <Value xsi:type="xsd:string">1.1a</Value>
+                </ParameterValueStruct>
+            </ParameterList>
+        </cwmp:Inform>
+    </soap:Body>
 </soap:Envelope>

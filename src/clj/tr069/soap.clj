@@ -1,47 +1,20 @@
 (ns clj.tr069.soap
   (:require (clojure.string))
+  (:use (clj.tr069 databinding schema))
   (:import (org.apache.axiom.soap SOAPEnvelope
                                   SOAPHeaderBlock)
            (org.apache.axiom.om OMElement)
            (org.apache.axiom.soap.impl.builder StAXSOAPModelBuilder)
-           (java.io InputStream
-                    FileInputStream)
-           (javax.xml.namespace QName)
+           (java.io InputStream)
            (javax.xml.stream XMLInputFactory)))
 
 (def ^:private ^XMLInputFactory xml-input-factory (XMLInputFactory/newFactory))
-
-(def ^:private xml-ns-xsd "http://www.w3.org/2001/XMLSchema")
-(def ^:private xml-ns-xsi "http://www.w3.org/2001/XMLSchema-instance")
-(def ^:private xml-ns-soap "http://schemas.xmlsoap.org/soap/envelope/")
-(def ^:private xml-ns-soapenc "http://schemas.xmlsoap.org/soap/encoding/")
 
 (defn- parse-envelope
   [^InputStream in]
   (let [builder (StAXSOAPModelBuilder.
                   (.createXMLStreamReader xml-input-factory in))]
     (.getSOAPEnvelope builder)))
-
-(defn- get-attr
-  [^OMElement om local-name]
-  (.getAttributeValue om (QName. local-name)))
-
-(defn- do-databinding
-  [^OMElement om]
-  (let [name (.getLocalName om)
-        text (.getText om)
-        first-elem (.getFirstElement om)
-        array-type (get-attr om "arrayType")]
-    (cond
-      (nil? first-elem)
-        (if (clojure.string/blank? text) nil text)
-      (nil? array-type)
-        (reduce (fn [elem-map ^OMElement child]
-                  (assoc elem-map (.getLocalName child) (do-databinding child)))
-                {}
-                (iterator-seq (.getChildElements om)))
-      :else 
-        (map do-databinding (iterator-seq (.getChildElements om))))))
 
 (defn- get-body
   [^SOAPEnvelope envelope]
@@ -50,8 +23,8 @@
     (if (.hasFault envelope)
       {:fault {:fault-code (.getText (.getCode fault)) 
                :fault-string (.getText (.getReason fault))
-               :detail (do-databinding (.getDetail fault))}}
-      (do-databinding body))))
+               :detail (bind-model (.getDetail fault))}}
+      (bind-model (.getFirstElement body)))))
 
 (defn- get-header
   [^SOAPEnvelope envelope]
