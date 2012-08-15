@@ -87,9 +87,10 @@
         ~@(map (fn [[type tag :as form]]
                  (case type
                    :child `(do-binding (first-elem ~om ~tag))
-                   :array `(map do-binding (child-array-seq ~om ~tag))
+                   :child-array `(map do-binding (child-array-seq ~om ~tag))
                    :inline-array `(map do-binding (inline-array-seq ~om ~tag))
-                   :value `(parse-value ~(last form) (text ~om ~tag))
+                   (:int :unsignedInt :dateTime :base64 :string :boolean)
+                     `(parse-value ~type (text ~om ~tag))
                    :any-simple-value (let [om-sym (gensym) type-sym (gensym)] 
                                        `(let [~om-sym
                                               (.getFirstChildWithName ~om (qname ~tag))
@@ -122,21 +123,21 @@
               ~@(map (fn [[field type tag :as form]]
                        (case type
                          :child `(to-slurp ~field)
-                         :array `[~tag (array-type (keyword
-                                                     (str "cwmp:" ~(name (last form))))
-                                                   ~field)
+                         :child-array `[~tag (array-type
+                                               (keyword (str "cwmp:" ~(name (last form))))
+                                               ~field)
                                   (mapcat to-slurp ~field)]
                          :inline-array `(mapcat to-slurp ~field)
-                         :value `[~tag {} (print-value ~(last form) ~field)]
+                         (:int :unsignedInt :dateTime :base64 :string :boolean)
+                           `[~tag {} (print-value ~type ~field)]
                          :any-simple-value `(to-slurp ~field))
                        )
                      more)
               )
             ]))
        (defmethod do-binding ~(keyword cls)
-         [^OMElement ~(symbol "om")]
-         (defbinding ~(symbol "om") ~cls
-                      ~@(map rest more))))))
+         [^OMElement om#]
+         (defbinding om# ~cls ~@(map rest more))))))
 
 
 ; Functions for parsing SOAP envelope
@@ -169,9 +170,29 @@
             (iterator-seq (.extractAllHeaderBlocks header)))))
 
 (defn parse-tr069-message
-  "Parse a SOAP envelope to a TR-069 message object"
+  "Parse a SOAP envelope to a TR-069 message map"
   [^InputStream in]
   (let [envelope (parse-envelope in)]
      {:body (get-body envelope)
       :header (get-header envelope)}))
 
+(defn serialize-tr069-message
+  "Serialize a TR-069 message map to a SOAP envelope XML"
+  [{:keys [header body]}]
+  (xml-string
+    [:soap:Envelope {:xmlns:xsd  xml-ns-xsd
+                     :xmlns:xsi  xml-ns-xsi
+                     :xmlns:soap xml-ns-soap
+                     :xmlns:soapenc xml-ns-soapenc
+                     }
+     [:soap:Header {} (mapcat (fn [[hdr-name {:keys [must-understand value]}]]
+                                [(str "cwmp:" (name hdr-name))
+                                 {:soap:mustUnderstand (if must-understand 1 0)}
+                                 value])
+                              header)
+      :soap:Body {} (if-let [{:keys [fault-code fault-string detail]} (:fault body)]
+                      [:Fault {}
+                       [:faultcode {} fault-code
+                        :faultstring {} fault-string
+                        :detail {} (to-slurp detail)]]
+                      (to-slurp body))] ]))
