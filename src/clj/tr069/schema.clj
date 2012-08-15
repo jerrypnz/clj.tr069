@@ -1,8 +1,22 @@
 (ns clj.tr069.schema
   (:use (clj.tr069 datatype databinding)))
 
+; Fault
+(deftr069type
+  ^:top-level
+  Fault
+  (fault-code   :value :FaultCode :int) 
+  (fault-string :value :FaultString :string)
+  (details      :inline-array :SetParameterValuesFault))
+
+(deftr069type
+  SetParameterValuesFault
+  (fault-code   :value :FaultCode :int) 
+  (fault-string :value :FaultString :string))
+
 ; Inform
 (deftr069type
+  ^:top-level
   Inform
   (device-id      :child :DeviceId)
   (events         :array :Event         :EventStruct)
