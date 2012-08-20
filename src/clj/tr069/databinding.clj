@@ -47,9 +47,12 @@
       (map (fn [[tag attrs body]]
              (str "<" (name tag)
                   (clojure.string/join
-                    " " (cons "" (for [[k v] attrs] (str (name k) "=\"" v "\""))))
+                    " " (cons "" (for [[k v] attrs]
+                                   (str (name k) "=\"" v "\""))))
                   ">"
-                  (if (coll? body) (str "\n" (xml-string body)) (str body))
+                  (if (coll? body)
+                    (str "\n" (xml-string body))
+                    (str body))
                   "</" (name tag) ">\n"
                   ))
            elems))))
@@ -93,11 +96,11 @@
                    (:int :unsignedInt :dateTime :base64 :string :boolean)
                      `(parse-value ~type (text ~om ~tag))
                    :any-simple-value (let [om-sym (gensym) type-sym (gensym)] 
-                                       `(let [~om-sym
-                                              (.getFirstChildWithName ~om (qname ~tag))
-                                              ~type-sym 
-                                              (parse-type (.getAttributeValue ~om-sym
-                                                                              xsi-type))]
+                                       `(let [~om-sym (.getFirstChildWithName
+                                                        ~om (qname ~tag))
+                                              ~type-sym (parse-type
+                                                          (.getAttributeValue
+                                                            ~om-sym xsi-type))]
                                           (TypedValue. ~type-sym 
                                                        (parse-value
                                                          ~type-sym
@@ -124,9 +127,11 @@
               ~@(map (fn [[field type tag :as form]]
                        (case type
                          :child `(to-slurp ~field)
-                         :child-array `[~tag (array-type
-                                               (keyword (str "cwmp:" ~(name (last form))))
-                                               ~field)
+                         :child-array `[~tag
+                                        (array-type
+                                          (keyword
+                                            (str "cwmp:" ~(name (last form))))
+                                          ~field)
                                   (mapcat to-slurp ~field)]
                          :inline-array `(mapcat to-slurp ~field)
                          (:int :unsignedInt :dateTime :base64 :string :boolean)
@@ -191,7 +196,8 @@
                                  {:soap:mustUnderstand (if must-understand 1 0)}
                                  value])
                               header)
-      :soap:Body {} (if-let [{:keys [fault-code fault-string detail]} (:fault body)]
+      :soap:Body {} (if-let [{:keys [fault-code fault-string detail]}
+                             (:fault body)]
                       [:Fault {}
                        [:faultcode {} fault-code
                         :faultstring {} "CWMP fault"
