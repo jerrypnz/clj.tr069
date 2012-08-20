@@ -14,6 +14,7 @@
 (def ^:private xml-ns-xsi "http://www.w3.org/2001/XMLSchema-instance")
 (def ^:private xml-ns-soap "http://schemas.xmlsoap.org/soap/envelope/")
 (def ^:private xml-ns-soapenc "http://schemas.xmlsoap.org/soap/encoding/")
+(def ^:private xml-ns-cwmp "urn:dslforum-org:cwmp-1-1")
 
 (def ^:private ^XMLInputFactory xml-input-factory (XMLInputFactory/newFactory))
 
@@ -154,7 +155,6 @@
         fault (.getFault body)]
     (if (.hasFault envelope)
       {:fault {:fault-code (.getText (.getCode fault)) 
-               :fault-string (.getText (.getReason fault))
                :detail (do-binding (first-elem (.getDetail fault)))}}
       (do-binding (.getFirstElement body)))))
 
@@ -173,8 +173,8 @@
   "Parse a SOAP envelope to a TR-069 message map"
   [^InputStream in]
   (let [envelope (parse-envelope in)]
-     {:body (get-body envelope)
-      :header (get-header envelope)}))
+     {:header (get-header envelope)
+      :body (get-body envelope)}))
 
 (defn serialize-tr069-message
   "Serialize a TR-069 message map to a SOAP envelope XML"
@@ -184,6 +184,7 @@
                      :xmlns:xsi  xml-ns-xsi
                      :xmlns:soap xml-ns-soap
                      :xmlns:soapenc xml-ns-soapenc
+                     :xmlns:cwmp xml-ns-cwmp
                      }
      [:soap:Header {} (mapcat (fn [[hdr-name {:keys [must-understand value]}]]
                                 [(str "cwmp:" (name hdr-name))
@@ -193,6 +194,17 @@
       :soap:Body {} (if-let [{:keys [fault-code fault-string detail]} (:fault body)]
                       [:Fault {}
                        [:faultcode {} fault-code
-                        :faultstring {} fault-string
+                        :faultstring {} "CWMP fault"
                         :detail {} (to-slurp detail)]]
                       (to-slurp body))] ]))
+
+(defn create-tr069-message
+  "Create a TR-069 message programatically."
+  [body & {:as headers}]
+  {:header (reduce (fn [hdrs [k v]]
+                     (assoc hdrs k {:name k
+                                    :must-understand true
+                                    :value v}))
+                   {}
+                   headers)
+   :body body})

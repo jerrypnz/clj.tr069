@@ -42,3 +42,9 @@
   (product-class :string :ProductClass)
   (serial-number :string :SerialNumber))
 
+; Inform Response
+(deftr069type
+  ^:top-level
+  InformResponse
+  (max-envelopes :int :MaxEnvelopes))
+
