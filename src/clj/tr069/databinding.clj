@@ -95,16 +95,16 @@
                    :inline-array `(map do-binding (inline-array-seq ~om ~tag))
                    (:int :unsignedInt :dateTime :base64 :string :boolean)
                      `(parse-value ~type (text ~om ~tag))
-                   :any-simple-value (let [om-sym (gensym) type-sym (gensym)] 
-                                       `(let [~om-sym (.getFirstChildWithName
-                                                        ~om (qname ~tag))
-                                              ~type-sym (parse-type
-                                                          (.getAttributeValue
-                                                            ~om-sym xsi-type))]
-                                          (TypedValue. ~type-sym 
-                                                       (parse-value
-                                                         ~type-sym
-                                                         (.getText ~om-sym)))))))
+                     :any-simple-value `(let [child# (.getFirstChildWithName
+                                                      ~om (qname ~tag))
+                                              type# (parse-type
+                                                     (.getAttributeValue
+                                                      child# xsi-type))]
+                                          (TypedValue.
+                                           type#
+                                           (parse-value
+                                            type#
+                                            (.getText child#))))))
                more)))
 
 
