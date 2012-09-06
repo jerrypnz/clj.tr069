@@ -1,5 +1,6 @@
 (ns clj.tr069.schema
-  (:use (clj.tr069 datatype databinding)))
+  (:use (clj.tr069 datatype databinding util))
+  (:require [clojure.string :as string]))
 
 ; Fault
 (deftr069type
@@ -48,3 +49,48 @@
   InformResponse
   (max-envelopes :int :MaxEnvelopes))
 
+(defrecord Device
+    [identifier
+     oui
+     product-class
+     serial-number
+     manufacturer
+     ip
+     ^{:path "ManagementServer.ConnectionRequestURL"} conn-req-url
+     ^{:path "ManagementServer.ConnectionRequestUsername"} conn-req-username
+     ^{:path "ManagementServer.ConnectionRequestPassword"} conn-req-password
+     ^{:path "ManagementServer.ParameterKey"} param-key
+     ^{:path "DeviceInfo.ProvisioningCode"} provisioning-code
+     ^{:path "DeviceInfo.SpecVersion"} spec-version
+     ^{:path "DeviceInfo.HardwareVersion"} hardware-ver
+     ^{:path "DeviceInfo.SoftwareVersion"} software-ver
+     ^{:path "DeviceSummary"} device-summary
+     root-obj-name
+     wan-path])
+
+(defn inform->device [inform]
+  (let [dev-id (:device-id inform)
+        field-mapping (reduce (fn [mapping field]
+                                (if-let [path (:path (meta field))]
+                                  (assoc mapping path (keyword field))
+                                  mapping))
+                              {}
+                              (Device/getBasis))
+        device-map (reduce (fn [results {:keys [name value]}]
+                             (let [[root-name path] (string/split name #"\." 2)
+                                   value (:value value)]
+                              (if-let [field (field-mapping path)]
+                                (-> results
+                                    (assoc field value)
+                                    (assoc :root-obj-name root-name))
+                                (if-let [ip-path (match-external-ip path)]
+                                  (-> results
+                                      (assoc :ip value)
+                                      (assoc :wan-path ip-path))
+                                  results))))
+                           (into {:identifier (str
+                                               (:oui dev-id) "_"
+                                               (:serial-number dev-id))}
+                                 dev-id)
+                          (:parameter-list inform))]
+    (map->Device device-map)))

@@ -1,6 +1,8 @@
 (ns clj.tr069.core
-  (:use (clj.tr069 databinding schema))
+  (:use (clj.tr069 databinding schema session))
+  (:require [clojure.string :as string])
   (:import (java.io PushbackInputStream)))
+
 
 (defn- wrap-tr069-method [handler]
   (fn [{method :request-method :as request}]
@@ -35,7 +37,8 @@
   (fn [{body :body :as request}]
     (let [req-tr-msg (parse-message-or-nil body)
           response (handler (assoc request :tr-message req-tr-msg))
-          resp-tr-msg (:tr-message response)]
+          resp-tr-msg (:tr-message response)
+          response (dissoc response :tr-message)]
       (if (nil? resp-tr-msg)
         (assoc-in response [:headers "Content-Length"] "0")
         (let [resp-body (serialize-tr069-message resp-tr-msg)]
@@ -44,11 +47,18 @@
             (assoc-in [:headers "Content-Length"] (str (.length resp-body)))
             (assoc :body resp-body)))))))
 
+(defn- wrap-tr069-session [handler]
+  (fn [{message :tr-message
+       {session :tr-session} :session
+       :as request}]
+    ;TODO Implement session logic
+    (handler request)))
+
 (defn- cwmp-handler
   "Core handler of TR-069 ACS"
   [{message :tr-message :as request}]
-  {:status 200
-   :tr-message message})
+  ;TODO Implement handle dispatching
+  message)
 
 (def handler
   (-> cwmp-handler
