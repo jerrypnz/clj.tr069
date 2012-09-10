@@ -70,27 +70,24 @@
 
 (defn inform->device [inform]
   (let [dev-id (:device-id inform)
-        field-mapping (reduce (fn [mapping field]
-                                (if-let [path (:path (meta field))]
-                                  (assoc mapping path (keyword field))
-                                  mapping))
-                              {}
-                              (Device/getBasis))
-        device-map (reduce (fn [results {:keys [name value]}]
-                             (let [[root-name path] (string/split name #"\." 2)
-                                   value (:value value)]
-                              (if-let [field (field-mapping path)]
-                                (-> results
-                                    (assoc field value)
-                                    (assoc :root-obj-name root-name))
-                                (if-let [ip-path (match-external-ip path)]
-                                  (-> results
-                                      (assoc :ip value)
-                                      (assoc :wan-path ip-path))
-                                  results))))
-                           (into {:identifier (str
-                                               (:oui dev-id) "_"
-                                               (:serial-number dev-id))}
-                                 dev-id)
-                          (:parameter-list inform))]
+        field-mapping (->> (Device/getBasis)
+                           (map #(if-let [path (:path (meta %))]
+                                   [path (keyword %)]))
+                           (remove nil?)
+                           (into {}))
+        device-map (->> (:parameter-list inform)
+                        (mapcat (fn [{name :name {value :value} :value}]
+                                  (let [[root-name path]
+                                        (string/split name #"\." 2)]
+                                    (if-let [field (field-mapping path)]
+                                      {field value
+                                       :root-obj-name root-name}
+                                      (when-let [ip-path (match-external-ip path)]
+                                        {:ip value
+                                         :wan-path ip-path})))))
+                        (remove nil?)
+                        (into {:identifier (str
+                                            (:oui dev-id) "_"
+                                            (:serial-number dev-id))})
+                        (into dev-id))]
     (map->Device device-map)))
