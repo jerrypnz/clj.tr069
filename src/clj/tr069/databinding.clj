@@ -1,5 +1,5 @@
 (ns clj.tr069.databinding
-  (:require (clojure.string))
+  (:require [clojure.string :as string])
   (:use (clj.tr069 datatype))
   (:import (org.apache.axiom.soap SOAPEnvelope
                                   SOAPHeaderBlock)
@@ -46,7 +46,7 @@
     (apply str
       (map (fn [[tag attrs body]]
              (str "<" (name tag)
-                  (clojure.string/join
+                  (string/join
                     " " (cons "" (for [[k v] attrs]
                                    (str (name k) "=\"" v "\""))))
                   ">"
@@ -58,7 +58,7 @@
            elems))))
 
 (defn parse-type [xsd-type]
-  (clojure.string/replace xsd-type "xsd:" ""))
+  (string/replace xsd-type "xsd:" ""))
 
 (defn array-type [type coll]
   {:soapenc:arrayType (str (name type) "[" (count coll) "]")})
