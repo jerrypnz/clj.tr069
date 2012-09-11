@@ -7,6 +7,7 @@
   :ring {:handler clj.tr069.core/handler
          :port 8080}
   :dependencies [[org.clojure/clojure "1.4.0"]
+                 [ring/ring-core "1.1.5"]
                  [org.apache.ws.commons.axiom/axiom-api "1.2.13"]
                  [org.apache.ws.commons.axiom/axiom-impl "1.2.13"]
                  ])

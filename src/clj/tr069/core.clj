@@ -1,5 +1,6 @@
 (ns clj.tr069.core
-  (:use (clj.tr069 databinding schema session))
+  (:use (clj.tr069 databinding schema session)
+        (ring.middleware session))
   (:require [clojure.string :as string])
   (:import (java.io PushbackInputStream)))
 
@@ -47,22 +48,36 @@
             (assoc-in [:headers "Content-Length"] (str (.length resp-body)))
             (assoc :body resp-body)))))))
 
-(defn- wrap-tr069-session [handler]
-  (fn [{message :tr-message
-       {session :tr-session} :session
-       :as request}]
-    ;TODO Implement session logic
-    (handler request)))
+(defn- get-or-create-tr069-session [request]
+  (if-let [tr-session (:tr-session (:session request))]
+    tr-session
+    (new-tr069-session request)))
 
-(defn- cwmp-handler
+(defn- wrap-tr069-session [handler]
+  (fn [request]
+    (let [message (:tr-message request)
+          session (get-or-create-tr069-session request)
+          response (handler (assoc request :tr-session session))
+          session (:tr-session response)
+          response (dissoc response :tr-session)]
+      (if (should-close? session)
+        (dissoc response :session)
+        (assoc-in response [:session :tr-session] session)))))
+
+(defn- cwmp-dispatcher
   "Core handler of TR-069 ACS"
-  [{message :tr-message :as request}]
-  ;TODO Implement handle dispatching
+  [{message :tr-message
+    session :tr-session
+    :as request}]
   message)
 
 (def handler
-  (-> cwmp-handler
-    wrap-tr069-message
-    wrap-tr069-exception
-    wrap-tr069-method))
+  (-> cwmp-dispatcher
+      wrap-tr069-session
+      wrap-tr069-message
+      wrap-tr069-exception
+      wrap-tr069-method
+      (wrap-session {:cookie-name "tr069-session-id"
+                     :cookie-attrs {:discard true
+                                    :version 1}})))
 
