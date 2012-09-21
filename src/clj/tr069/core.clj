@@ -1,8 +1,10 @@
 (ns clj.tr069.core
-  (:use (clj.tr069 databinding schema session)
+  (:use (clj.tr069 databinding schema session handlers)
         (ring.middleware session))
   (:require [clojure.string :as string])
-  (:import (java.io PushbackInputStream)))
+  (:import (java.io PushbackInputStream
+                    ByteArrayOutputStream
+                    PrintStream)))
 
 
 (defn- wrap-tr069-method [handler]
@@ -21,7 +23,11 @@
       (catch Exception e
         {:status 400
          :headers {"Content-Type" "text/plain"}
-         :body (or (.getMessage e) "Bad request")}))))
+         :body (let [stream (ByteArrayOutputStream.)
+                     printer (PrintStream. stream)
+                     _ (.printStackTrace e printer)
+                     msg (.toString stream)]
+                 msg)}))))
 
 (defn- parse-message-or-nil
   "Parse TR-069 message, or return nil if the content
@@ -39,7 +45,9 @@
     (let [req-tr-msg (parse-message-or-nil body)
           response (handler (assoc request :tr-message req-tr-msg))
           resp-tr-msg (:tr-message response)
-          response (dissoc response :tr-message)]
+          response (-> response
+                       (dissoc :tr-message)
+                       (assoc :status 200))]
       (if (nil? resp-tr-msg)
         (assoc-in response [:headers "Content-Length"] "0")
         (let [resp-body (serialize-tr069-message resp-tr-msg)]
@@ -55,8 +63,7 @@
 
 (defn- wrap-tr069-session [handler]
   (fn [request]
-    (let [message (:tr-message request)
-          session (get-or-create-tr069-session request)
+    (let [session (get-or-create-tr069-session request)
           response (handler (assoc request :tr-session session))
           session (:tr-session response)
           response (dissoc response :tr-session)]
@@ -69,7 +76,8 @@
   [{message :tr-message
     session :tr-session
     :as request}]
-  message)
+  (let [response (handle-tr069-message request)]
+    (assoc response :status 200)))
 
 (def handler
   (-> cwmp-dispatcher

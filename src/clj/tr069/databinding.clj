@@ -25,6 +25,10 @@
   "TR-069 databinding protocol"
   (to-slurp [this] "Serialize the object to XML"))
 
+(extend-protocol TR069Databinding
+  nil
+  (to-slurp [this] []))
+
 (defrecord TypedValue
   [type value]
   TR069Databinding
@@ -93,6 +97,7 @@
                    :child `(do-binding (first-elem ~om ~tag))
                    :child-array `(map do-binding (child-array-seq ~om ~tag))
                    :inline-array `(map do-binding (inline-array-seq ~om ~tag))
+                   :string-array `(map #(.getText %) (child-array-seq ~om ~tag))
                    (:int :unsignedInt :dateTime :base64 :string :boolean)
                      `(parse-value ~type (text ~om ~tag))
                      :any-simple-value `(let [child# (.getFirstChildWithName
@@ -132,7 +137,10 @@
                                           (keyword
                                             (str "cwmp:" ~(name (last form))))
                                           ~field)
-                                  (mapcat to-slurp ~field)]
+                                        (mapcat to-slurp ~field)]
+                         :string-array `[~tag
+                                         (array-type :xsd:string ~field)
+                                         (mapcat #(vector :string {} %) ~field)]
                          :inline-array `(mapcat to-slurp ~field)
                          (:int :unsignedInt :dateTime :base64 :string :boolean)
                            `[~tag {} (print-value ~type ~field)]
