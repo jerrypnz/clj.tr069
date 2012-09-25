@@ -1,18 +1,14 @@
-=========
-clj.tr069
-=========
+* clj.tr069
 
-A clojure implementation of the TR-069 protocol
+A clojure implementation of the TR-069 ACS
 
-Usage
-=====
+** Usage
 
 Currently it is a work in progress, please come back later for updates, or if you
 are interested, you could read the code for what I am doing
 
-License
-=======
+** License
 
-Copyright © 2012 FIXME
+Copyright © 2012 Jerry Peng
 
 Distributed under the Eclipse Public License, the same as Clojure.
